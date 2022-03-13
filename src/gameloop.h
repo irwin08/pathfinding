@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics.hpp>
+#include "map.h"
 
 class Gameloop {
 
@@ -21,6 +22,8 @@ private:
 
     sf::RenderWindow window;
     bool running;
+    bool mouse_down;
+    Map map;
 
 };
 
