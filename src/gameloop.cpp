@@ -48,6 +48,27 @@ void Gameloop::processInput() {
             running = false;
             std::cout << "Stopping..." << std::endl;
         }
+        else if(event.type == sf::Event::KeyReleased) {
+            if(event.key.code == sf::Keyboard::Enter) {
+                std::cout << "Starting pathfinding..." << std::endl;
+                map.path_find();
+            }
+
+        }
+        else if((event.type == sf::Event::MouseButtonPressed) && (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift   ))) {
+            auto pos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+            auto pos_normalized = sf::Vector2i(window.mapPixelToCoords(pos));
+            std::cout << pos.x << ", " << pos.y << std::endl;
+            std::cout << pos_normalized.x << ", " << pos_normalized.y << std::endl;
+            map.click_start(pos_normalized);
+        }
+        else if((event.type == sf::Event::MouseButtonPressed) && (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt   ))) {
+            auto pos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+            auto pos_normalized = sf::Vector2i(window.mapPixelToCoords(pos));
+            std::cout << pos.x << ", " << pos.y << std::endl;
+            std::cout << pos_normalized.x << ", " << pos_normalized.y << std::endl;
+            map.click_end(pos_normalized);
+        }
         else if((event.type == sf::Event::MouseButtonPressed)) {
             
             mouse_down = true;
