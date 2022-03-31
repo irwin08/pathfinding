@@ -2,6 +2,7 @@
 #define MAP_H
 
 #include <vector>
+#include <deque>
 #include <SFML/Graphics.hpp>
 
 enum class node_type {
@@ -24,7 +25,7 @@ public:
 
     void render(sf::RenderWindow &window);
 
-    bool BFS(std::pair<int,int> start, std::pair<int,int> end, std::vector<std::pair<int,int>> &explored, std::map<std::pair<int,int>, std::pair<int,int>> &parent_map);
+    bool BFS(std::pair<int,int> end, std::vector<std::pair<int,int>> &explored, std::map<std::pair<int,int>, std::pair<int,int>> &parent_map, std::deque<std::pair<int,int>> &queue);
 
     std::vector<std::pair<int,int>> path_find();
 

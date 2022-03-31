@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <ranges>
+#include <deque>
 
 Map::Map(int size, int cell_size) {
     grid = std::vector<std::vector<node_type>>(size, std::vector<node_type>(size, node_type::EMPTY));
@@ -144,38 +145,42 @@ std::vector<std::pair<int,int>> Map::adjacent_nodes(std::pair<int,int> node) {
 }
 
 
-bool Map::BFS(std::pair<int,int> start, std::pair<int,int> end, std::vector<std::pair<int,int>> &explored, std::map<std::pair<int,int>, std::pair<int,int>> &parent_map) {
+bool Map::BFS(std::pair<int,int> end, std::vector<std::pair<int,int>> &explored, std::map<std::pair<int,int>, std::pair<int, int>> &parent_map, std::deque<std::pair<int,int>> &queue) {
 
+    if(queue.empty())
+        return false;
 
-    if(start == end)
+    auto current_node = queue.front();
+    queue.pop_front();
+
+    if(current_node == end)
         return true;
 
-    explored.push_back(start);
+    explored.push_back(current_node);
 
-    auto adj = adjacent_nodes(start);
+    auto adj = adjacent_nodes(current_node);
 
-    std::cout << "x: " << start.first << " y: " << start.second << std::endl;
+    for(auto adj_node : adj) {
 
-    auto adjacent_unexplored = std::ranges::filter_view(adj, [&](auto pair){ return (std::find(explored.begin(), explored.end(), pair) == explored.end()); });
-
-
-    for(auto adj_node : adjacent_unexplored) {
-        parent_map.insert({adj_node, start});
-        if(BFS(adj_node, end, explored, parent_map)) {
-            return true;
+        if(std::find(explored.begin(), explored.end(), adj_node) == explored.end()) {
+            queue.push_back(adj_node);
+            explored.push_back(adj_node);
+            parent_map.insert({adj_node, current_node});
         }
     }
 
-    return false;
+
+    return BFS(end, explored, parent_map, queue);
 }
 
 
 std::vector<std::pair<int,int>> Map::path_find() {
     std::vector<std::pair<int, int>> explored = {};
     std::map<std::pair<int,int>, std::pair<int,int>> parents_map = {};
+    std::deque<std::pair<int,int>> queue = {start};
 
 
-    this->BFS(start, end, explored, parents_map);
+    this->BFS(end, explored, parents_map, queue);
 
     for(auto pair : explored) {
         grid[pair.first][pair.second] = node_type::EXPLORED;
@@ -186,6 +191,8 @@ std::vector<std::pair<int,int>> Map::path_find() {
     auto node = end;
 
     std::vector<std::pair<int,int>> path = {node};
+    
+    std::cout << parents_map.size() << std::endl;
 
     while(!found_parent) {
         if(node == start) {
@@ -194,8 +201,14 @@ std::vector<std::pair<int,int>> Map::path_find() {
         }
 
         node = parents_map.at(node);
+        std::cout << node.first << " " << node.second << std::endl;
         grid[node.first][node.second] = node_type::PATH;
     }
+
+    grid[start.first][start.second] = node_type::START;
+    grid[end.first][end.second] = node_type::END;
+
+    std::cout << "path finding complete" << std::endl;
 
     return path;
 }

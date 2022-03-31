@@ -3,7 +3,7 @@
 
 int main() {
 
-    Gameloop game(500,600,"Hello world");
+    Gameloop game(500,600,"Path Finder");
     
     game.run();
 
